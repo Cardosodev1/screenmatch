@@ -1,12 +1,12 @@
 package br.com.alura.screenmatch;
 
+import br.com.alura.screenmatch.model.Episode;
 import br.com.alura.screenmatch.model.Serie;
 import br.com.alura.screenmatch.service.ApiConsumption;
 import br.com.alura.screenmatch.service.ConvertsData;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Service;
 
 @SpringBootApplication
 public class ScreenmatchApplication implements CommandLineRunner {
@@ -23,5 +23,8 @@ public class ScreenmatchApplication implements CommandLineRunner {
 		ConvertsData converter = new ConvertsData();
 		Serie serie = converter.getData(json, Serie.class);
 		System.out.println(serie);
+		json = apiConsumption.getData("https://www.omdbapi.com/?t=gilmore+girls&season=1&episode=2&apikey=6585022c");
+		Episode episode = converter.getData(json, Episode.class);
+		System.out.println(episode);
 	}
 }
