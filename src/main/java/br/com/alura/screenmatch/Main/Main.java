@@ -9,10 +9,7 @@ import br.com.alura.screenmatch.service.ConvertsData;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -50,12 +47,17 @@ public class Main {
                 .flatMap(s -> s.episodeData().stream())
                 .collect(Collectors.toList());
 
-        System.out.println("\nTop 5 episodios: ");
-        episodeData.stream()
-                .filter(e -> !e.rating().equalsIgnoreCase("N/A"))
-                .sorted(Comparator.comparing(EpisodeData::rating).reversed())
-                .limit(5)
-                .forEach(System.out::println);
+//        System.out.println("\nTop 5 episodios: ");
+//        episodeData.stream()
+//                .filter(e -> !e.rating().equalsIgnoreCase("N/A"))
+//                .peek(e -> System.out.println("Primeiro filtro(N/A) " + e))
+//                .sorted(Comparator.comparing(EpisodeData::rating).reversed())
+//                .peek(e -> System.out.println("Ordenação " + e))
+//                .limit(10)
+//                .peek(e -> System.out.println("Limite " + e))
+//                .map(e -> e.title().toUpperCase())
+//                .peek(e -> System.out.println("Mapeamento " + e))
+//                .forEach(System.out::println);
 
         List<Episode> episodes = seasons.stream()
                 .flatMap(s -> s.episodeData().stream()
@@ -64,20 +66,45 @@ public class Main {
 
         episodes.forEach(System.out::println);
 
-        System.out.println("A partir de qual ano você deseja ver os episódios? ");
-        var year = scanner.nextInt();
-        scanner.nextLine();
+//        System.out.println("Digite um trecho do título do episódio");
+//        var excerptTitle = scanner.nextLine();
+//        Optional<Episode> episodeSearched = episodes.stream()
+//                .filter(e -> e.getTitle().toUpperCase().contains(excerptTitle.toUpperCase()))
+//                .findFirst();
+//        if (episodeSearched.isPresent()) {
+//            System.out.println("Episódio encontrado!");
+//            System.out.println("Temporada: " + episodeSearched.get().getSeason());
+//        } else {
+//            System.out.println("Episódio não encontrado!");
+//        }
+//
+//        System.out.println("A partir de qual ano você deseja ver os episódios? ");
+//        var year = scanner.nextInt();
+//        scanner.nextLine();
+//
+//        LocalDate searchDate = LocalDate.of(year, 1, 1);
+//
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+//
+//        episodes.stream()
+//                .filter(e -> e.getReleaseData() != null && e.getReleaseData().isAfter(searchDate))
+//                .forEach(e -> System.out.println(
+//                        "Temporada: " + e.getSeason() +
+//                        " Episódio: " + e.getTitle() +
+//                        " Data lançamento: " + e.getReleaseData().format(formatter)
+//                ));
 
-        LocalDate searchDate = LocalDate.of(year, 1, 1);
+        Map<Integer, Double> ratingPerSeason = episodes.stream()
+                .filter(e -> e.getRating() > 0.0)
+                .collect(Collectors.groupingBy(Episode::getSeason, Collectors.averagingDouble(Episode::getRating)));
+        System.out.println(ratingPerSeason);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        episodes.stream()
-                .filter(e -> e.getReleaseData() != null && e.getReleaseData().isAfter(searchDate))
-                .forEach(e -> System.out.println(
-                        "Temporada: " + e.getSeason() +
-                        " Episódio: " + e.getTitle() +
-                        " Data lançamento: " + e.getReleaseData().format(formatter)
-                ));
+        DoubleSummaryStatistics est = episodes.stream()
+                .filter(e -> e.getRating() > 0.0)
+                .collect(Collectors.summarizingDouble(Episode::getRating));
+        System.out.println("Média: " + est.getAverage());
+        System.out.println("Melhor episódio: " + est.getMax());
+        System.out.println("Pior episódio: " + est.getMin());
+        System.out.println("Quantidade: " + est.getCount());
     }
 }
