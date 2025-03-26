@@ -3,8 +3,10 @@ package br.com.alura.screenmatch.Main;
 import br.com.alura.screenmatch.model.DataSeason;
 import br.com.alura.screenmatch.model.DataSerie;
 import br.com.alura.screenmatch.model.Serie;
+import br.com.alura.screenmatch.repository.SerieRepository;
 import br.com.alura.screenmatch.service.ApiConsumption;
 import br.com.alura.screenmatch.service.ConvertsData;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,6 +19,12 @@ public class Main {
     private final String ADDRESS = "https://www.omdbapi.com/?t=";
     private final String API_KEY = "&apikey=6585022c";
     private List<DataSerie> dataSeries = new ArrayList<>();
+
+    private SerieRepository repository;
+
+    public Main(SerieRepository repository) {
+        this.repository = repository;
+    }
 
     public void displayMenu() {
         var option = -1;
@@ -49,7 +57,9 @@ public class Main {
 
     private void searchWebSerie() {
         DataSerie data = getDataSerie();
-        dataSeries.add(data);
+        Serie serie = new Serie(data);
+        //dataSeries.add(data);
+        repository.save(serie);
         System.out.println(data);
     }
 
@@ -74,10 +84,7 @@ public class Main {
     }
 
     private void listSearchedSeries() {
-        List<Serie> series = new ArrayList<>();
-        series = dataSeries.stream()
-                  .map(d -> new Serie(d))
-                  .collect(Collectors.toList());
+        List<Serie> series = repository.findAll();
 
         series.stream()
                 .sorted(Comparator.comparing(Serie::getGenre))
