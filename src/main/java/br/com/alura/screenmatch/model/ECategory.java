@@ -3,7 +3,7 @@ package br.com.alura.screenmatch.model;
 public enum ECategory {
     ACTION("Action", "Ação"),
     ROMANCE("Romance", "Romance"),
-    COMEDY("Comedy", "Comedia"),
+    COMEDY("Comedy", "Comédia"),
     DRAMA("Drama", "Drama"),
     CRIME("Crime", "Crime");
 
