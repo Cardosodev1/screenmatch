@@ -21,15 +21,31 @@ public interface SerieRepository extends JpaRepository<Serie, Long> {
 
     List<Serie> findByTotalSeasonsLessThanEqualAndRatingGreaterThanEqual(int totalSeasons, double rating);
 
-    @Query("SELECT s FROM Serie s WHERE s.totalSeasons <= :totalSeasons AND s.rating >= :rating")
+    @Query("SELECT s FROM Serie s " +
+            "WHERE s.totalSeasons <= :totalSeasons AND s.rating >= :rating")
     List<Serie> seriesBySeasonAndRating(int totalSeasons, double rating);
 
-    @Query("SELECT e FROM Serie s JOIN s.episodes e WHERE e.title ILIKE %:excerptEpisode%")
+    @Query("SELECT e FROM Serie s " +
+            "JOIN s.episodes e " +
+            "WHERE e.title ILIKE %:excerptEpisode%")
     List<Episode> episodeByExcerpt(String excerptEpisode);
 
-    @Query("SELECT e FROM Serie s JOIN s.episodes e WHERE s = :serie ORDER BY e.rating DESC LIMIT 5")
+    @Query("SELECT e FROM Serie s " +
+            "JOIN s.episodes e " +
+            "WHERE s = :serie ORDER BY e.rating DESC LIMIT 5")
     List<Episode> topEpisodesBySerie(Serie serie);
 
-    @Query("SELECT e FROM Serie s JOIN s.episodes e WHERE s = :serie AND YEAR(e.releaseData) >= :yearRelease")
+    @Query("SELECT e FROM Serie s " +
+            "JOIN s.episodes e " +
+            "WHERE s = :serie AND YEAR(e.releaseData) >= :yearRelease")
     List<Episode> episodesBySerieAndYear(Serie serie, int yearRelease);
+
+    @Query("SELECT s FROM Serie s " +
+            "JOIN s.episodes e " +
+            "GROUP BY s " +
+            "ORDER BY MAX(e.releaseData) DESC LIMIT 5")
+    List<Serie> latestReleases();
+
+    @Query("SELECT e FROM Serie s JOIN s.episodes e WHERE s.id = :id AND e.season = :number")
+    List<Episode> getEpisodesBySeason(Long id, Long number);
 }
